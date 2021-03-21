@@ -1,6 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
 import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/FBXLoader.js';
-// import {GLTFLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/GLTFLoader.js';
 import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
 
 let showPrompt = (display,message) => {
@@ -45,8 +44,8 @@ document.body.appendChild( renderer.domElement);
     });
 
     let LoadBackground = () => {
-        const loader = new THREE.CubeTextureLoader();
-        const texture = loader.load([
+        const loadBg = new THREE.CubeTextureLoader();
+        const texture = loadBg.load([
             './assets/Background/posx.jpg',
             './assets/Background/negx.jpg',
             './assets/Background/posy.jpg',
@@ -151,12 +150,12 @@ document.body.appendChild( renderer.domElement);
                 }
             case 'A': {
                 if(!(checkDistance(10)))
-                getCharacterbyName("player1").position.z += 0.5; 
+                getCharacterbyName("player1").position.z += 2; 
                 break; 
                 }
             case 'D': {
                 if(!(checkDistance(11)))
-                getCharacterbyName("player1").position.z -= 0.5;
+                getCharacterbyName("player1").position.z -= 2;
                 break;
                 } 
             case 'F':{
@@ -181,40 +180,40 @@ document.body.appendChild( renderer.domElement);
             }
             case 'ARROWLEFT':{
                 if(!(checkDistance(11)))
-                getCharacterbyName("player2").position.z +=0.5;
+                getCharacterbyName("player2").position.z +=2;
                 break;
             }
             case 'ARROWRIGHT':{
                 if(!(checkDistance(10)))
-                getCharacterbyName("player2").position.z -=0.5;
+                getCharacterbyName("player2").position.z -=2;
                 break;
             }
             case 'I':{
                 console.log(characters)
             }
+            case '↑':{ 
+                animation(getCharacterbyName("player2"), './assets/', `Action/${player2}/Jump.fbx`, { loopOnce : true})
+                break;}
+            case '←': {
+            if(!(checkDistance(11)))
+            getCharacterbyName("player2").position.z +=2;
+            break;}
+            case '→':{
+                if(!(checkDistance(10)))
+                getCharacterbyName("player2").position.z -=2;
+                break;
+            }
+            case 'CTRL':{
+                Attack('player2','player1', 'Attack1', 'Impact1', 300, 'EffortMan.wav');
+                break;
+            } 
         }
     }     
     }
 
-    let clearThree = (obj) => {
-        while(obj.children.length > 0){ 
-          clearThree(obj.children[0])
-          obj.remove(obj.children[0]);
-        }
-        if(obj.geometry) obj.geometry.dispose()
-      
-        if(obj.material){ 
-          //in case of map, bumpMap, normalMap, envMap ...
-          Object.keys(obj.material).forEach(prop => {
-            if(!obj.material[prop])
-              return         
-            if(obj.material[prop] !== null && typeof obj.material[prop].dispose === 'function')                                  
-              obj.material[prop].dispose()                                                        
-          })
-          obj.material.dispose()
-        }
-      }   
-      
+    document.getElementById("controls").addEventListener('click',(event)=>{
+        controller(event.srcElement.childNodes[0].data);
+    })
 
     let getCharacterbyName = (code) => {
         let character = {}
@@ -310,6 +309,7 @@ document.getElementById("initialize-button").addEventListener("click",()=>{
     if(player1 && player2){
         document.getElementById("menu").style.display ="none";
         document.getElementById("topBar").style.display ="block";
+        document.getElementById("controls").style.display ="block";
         showPrompt('block', 'Loading...')
         InitializeFight(player1, player2);
 }})
