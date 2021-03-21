@@ -41,7 +41,7 @@ var initialLoad = false;
     manager.onStart = () => {
         if(!initialLoad){
         document.getElementById("loader-container").style.display = 'block';
-        document.getElementById("loadpercent").innerText = 'Hang in there, it usually takes more time one the first load!';
+        document.getElementById("loadpercent").innerText = 'Hang in there, it usually takes more time on the first load!';
         }
     }
     manager.onLoad =  () => {
@@ -387,14 +387,14 @@ let fullScreen = () => {
         catch(e){console.log(e)}
     } 
 }
-let wakeLock = null;
-let _navigator = window.navigator;
-    try {
-      wakeLock = await _navigator.wakeLock.request('screen');
-      console.log('got it!')
-    } catch (err) {
-      console.log(err)
-    }
+// let wakeLock = null;
+// let _navigator = window.navigator;
+//     try {
+//       wakeLock = await _navigator.wakeLock.request('screen');
+//       console.log('got it!')
+//     } catch (err) {
+//       console.log(err)
+//     }
 
 document.getElementById("home").addEventListener("click",()=>{
     window.location.reload();
