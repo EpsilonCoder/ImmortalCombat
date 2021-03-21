@@ -387,14 +387,6 @@ let fullScreen = () => {
         catch(e){console.log(e)}
     } 
 }
-// let wakeLock = null;
-// let _navigator = window.navigator;
-//     try {
-//       wakeLock = await _navigator.wakeLock.request('screen');
-//       console.log('got it!')
-//     } catch (err) {
-//       console.log(err)
-//     }
 
 document.getElementById("home").addEventListener("click",()=>{
     window.location.reload();
