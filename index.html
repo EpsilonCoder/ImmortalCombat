@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>IMMORTAL COMBAT</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <style>
+            @font-face {
+            font-family: Killer;
+            src: url('./assets/Fonts/ButcherTheBaker-R8RA.ttf');
+            }
+            @font-face {
+            font-family: Killer1;
+            src: url('./assets/Fonts/RuneSlasherCondensed.otf');
+            }
+            @font-face {
+            font-family: Killer2;
+            src: url('./assets/Fonts/GolfClubHomicide-51azG.ttf');
+            }
+            html,body {
+                margin: 0;
+                height: 100vh;
+                overflow: hidden !important;;
+                cursor:default;
+                background: url('./assets/Background/menu.jfif');
+            }
+            div {
+                position: absolute;
+                height: 100vh;
+                width: 100vw;
+                /* background-color: #e5e5e5;opacity: 0.8; */
+            }
+            h1 {
+                text-align: center;
+                font-weight: 900;
+                font-size: 2em;
+                line-height: .8em;
+                padding: .2em;
+                border: 5px solid black;
+            }
+            .health-bar-container{
+                border:5px solid #ccc;background-color: white;opacity: 0.7;width: 35%;height: 28px;border-radius: 2px;
+            }
+            .health-bar{
+                color:#000;padding-left:2px;font-size: 15px;background-color:#c54;height: 18px;opacity: 1;
+                font-family: Killer2;
+            }
+            .common-class{
+                margin: 0!important;opacity: 0.8;font-size:40px;background-color: white;font-family: Killer1;
+            }
+            .title{ width: 30%;left:35%; text-align: center;}
+            .health1{left:0}
+            #health1percent{width:100%;}
+            .health2{right:0;}
+            #health2percent{width:100%;}
+            #prompt{display: none;}
+            #topBar{display: none;}
+            #menu{display: block;top:15%;}
+        </style>
+    </head>
+    <body>
+        <div id="topBar">
+              <div class="health1 health-bar-container">
+                <div id="health1percent" class="health-bar">Player1</div>
+              </div> 
+              <div class="title">
+                <h1 style="margin: 0!important;opacity: 0.5;background-color: white;font-family: Killer;">IMMORTAL COMBAT</h1> 
+              </div>
+              <div class="health2 health-bar-container">
+                <div id="health2percent" class="health-bar">Player2</div>
+              </div>             
+        </div>
+        <div id="menu">
+            <div class="title">
+              <h1 style="margin: 0!important;opacity: 0.8;font-size:50px;background-color: white;font-family: Killer;">IMMORTAL COMBAT</h1> <br>
+              <span style="margin: 0!important;opacity: 0.8;font-size:40px;color: #cf1313;font-family: Killer2;">Choose Your Fighters...</span> <br>
+              <span>
+              <select id="player1_select" class ="common-class">
+                <option value="Hulk">Hulk</option>
+                <option value="Sophie">Sophie</option>
+                <option value="Maw">Maw</option>
+                <option value="VanGuard">VanGuard</option>
+              </select> 
+              &nbsp;
+              <select id="player2_select" class="common-class">
+                <option value="Hulk">Hulk</option>
+                <option value="Sophie">Sophie</option>
+                <option value="Maw">Maw</option>
+                <option value="VanGuard">VanGuard</option>
+              </select>
+            </span><br>
+            <button id="initialize-button" style="margin: 0!important;opacity: 0.8;font-size:40px;background-color: white;font-family: Killer;">Fight!</button>
+            <br>
+            <button id="fullscreen-button" style="margin: 0!important;opacity: 0.8;font-size:40px;background-color: white;font-family: Killer;">Enter FullScreen</button>
+            </div>        
+        </div>
+        <div id="prompt" style="top:40%;text-align: center;font-family: Killer;font-size: 75px;color: #500202;">
+            <span style="margin: 0!important;opacity: 0.9"></span> 
+        </div>
+        <script src="js/main.js" type="module"></script>
+    </body>     
+</html>
