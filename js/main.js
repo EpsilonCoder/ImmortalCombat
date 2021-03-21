@@ -19,6 +19,7 @@ const renderer =  new THREE.WebGLRenderer();
 const light1 = new THREE.AmbientLight( 0x404040 );
 const light2 = new THREE.DirectionalLight( 0xffffff, 0.1);
 const light3 =  new THREE.HemisphereLight( 0xffffbb, 0x080820,4 );
+const manager = new THREE.LoadingManager();
 renderer.setClearColor("#E5E5E5");
 light2.position.set(0,0,100)
 scene.add( light1 );
@@ -31,10 +32,38 @@ var mixers = [];
 var previousRAF = null;
 var characters = [];
 var gameover = false;
+var paused = false;
 document.getElementById("health1percent").innerText = player1;
 document.getElementById("health2percent").innerText = player2;
 renderer.setSize( window.innerWidth, window.innerHeight);
 document.body.appendChild( renderer.domElement);
+var initialLoad = false;
+    manager.onStart = () => {
+        if(!initialLoad){
+        document.getElementById("loader-container").style.display = 'block';
+        }
+    }
+    manager.onLoad =  () => {
+        document.getElementById("loader-container").style.display = 'none';
+        if(!initialLoad){
+            characters.forEach(el => {el.visible = true;}
+                );
+            showPrompt('block', 'FIGHT')
+            initialLoad = true;
+            setTimeout(()=>{
+                showPrompt('none','');
+                document.getElementById("pause").style.display = 'inline-block';
+                document.getElementById("home").style.display = 'inline-block';
+            },2000)}
+    };
+    manager.onProgress =  ( url, itemsLoaded, itemsTotal ) => {
+        if(!initialLoad){
+        document.getElementById("loadpercent").style.width = itemsLoaded / itemsTotal * 100 + "%";
+        document.getElementById("loadpercent").innerText = "loading - "+ url +" - "+ itemsLoaded +" / "+ itemsTotal;}
+    };
+    manager.onError = ( url ) => {
+        console.log( 'Error loading ' + url );
+    };
     window.addEventListener('resize', () => {
         renderer.setSize( window.innerWidth, window.innerHeight);
         animate();
@@ -44,7 +73,7 @@ document.body.appendChild( renderer.domElement);
     });
 
     let LoadBackground = () => {
-        const loadBg = new THREE.CubeTextureLoader();
+        const loadBg = new THREE.CubeTextureLoader(manager);
         const texture = loadBg.load([
             './assets/Background/posx.jpg',
             './assets/Background/negx.jpg',
@@ -68,7 +97,7 @@ document.body.appendChild( renderer.domElement);
         scene.add(plane);
     }
     let LoadAnimatedModelAndPlay = (player, offset, playerCode, rotate) => {
-        const loader = new FBXLoader();
+        const loader = new FBXLoader(manager);
         loader.setPath('./assets/');
         loader.load(`Character/${player}.fbx`, (fbx) => {
             fbx.health = 1000;
@@ -87,20 +116,30 @@ document.body.appendChild( renderer.domElement);
           scene.add(fbx);
         },
         (xhr)=>{
-            setTimeout(() => {
-                if(xhr.loaded === xhr.total ){
-                characters.forEach(el => {el.visible = true;}
-                    );
-                showPrompt('block', 'FIGHT')
-                setTimeout(()=>{
-                    showPrompt('none','')
-                },2000)}
-            }, 3000);
-            
         }, (err)=>{});
     }
+
+    document.getElementById("pause").addEventListener("click",()=>{
+        paused = !paused;
+        if(paused){
+            showPrompt('block','PAUSED');
+            document.getElementById("pause").innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
+            <path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
+          </svg>`;
+        }
+        else{
+            showPrompt('none', '');
+            document.getElementById("pause").innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pause" viewBox="0 0 16 16">
+            <path d="M6 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm4 0a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5z"/>
+          </svg>`;
+        }
+        mixers.forEach(el => {
+            el._actions[0].paused = paused;
+        })
+    });
+
     let animation = (fbx, path, animFile, options) => {
-        const anim = new FBXLoader();
+        const anim = new FBXLoader(manager);
         anim.setPath(path);
         anim.load(animFile, (anim) => {
           const m = new THREE.AnimationMixer(fbx);
@@ -141,7 +180,7 @@ document.body.appendChild( renderer.domElement);
     RAF();
 
     let controller = (key) => {
-        if(characters.length > 1 && !gameover){
+        if(characters.length > 1 && !gameover && !paused){
         switch(key.toUpperCase())
         {
             case 'W': {
@@ -307,6 +346,7 @@ document.getElementById("initialize-button").addEventListener("click",()=>{
         player2 = document.getElementById('player2_select').value;
     }
     if(player1 && player2){
+        fullScreen();
         document.getElementById("menu").style.display ="none";
         document.getElementById("topBar").style.display ="block";
         document.getElementById("controls").style.display ="block";
@@ -314,11 +354,23 @@ document.getElementById("initialize-button").addEventListener("click",()=>{
         InitializeFight(player1, player2);
 }})
 document.getElementById("fullscreen-button").addEventListener("click",()=>{
+    fullScreen();
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+        document.getElementById("fullscreen-button").innerText = "Enter FullSceen";
+      }
+})
+
+let fullScreen = () => {
     if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
-    }
+        document.getElementById("fullscreen-button").innerText = "Exit FullSceen";
+        try{    
+        screen.orientation.lock("landscape");}
+        catch(e){console.log(e)}
+    } 
+}
+
+document.getElementById("home").addEventListener("click",()=>{
+    window.location.reload();
 })

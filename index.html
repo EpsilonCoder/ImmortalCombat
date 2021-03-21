@@ -64,18 +64,23 @@
             .menuLine{
               margin: 0!important;opacity: 0.8;font-size:40px;color: #cf1313;font-family: Killer2;
             }
+            #loader-container{
+              top:60%;display: none;
+              border:5px solid #ccc;background-color: white;opacity: 0.7;width: 50%;left:25%;height: 28px;border-radius: 2px;
+            }
+            #loadpercent{color:#000;padding-left:2px;font-size: 15px;background-color:grey;height: 18px;opacity: 1;
+                font-family: Killer1;width:100%;}
             #health1percent{width:100%;}
             .health2{right:0;}
             #health2percent{width:100%;}
             #prompt{display: none;}
             #topBar{display: none;}
             #menu{display: block;top:15%;}
-            #controls{display:none;opacity: 0.6;
-           }
-           #controls button{
-              height: 36px ;
-              width: 36px ;
-            }
+            #controls{display:none;opacity: 0.6;}
+            #controls button{height: 36px ;width: 36px ;}
+            #pause{display: none;}
+            #home{display: none;}
+
         </style>
     </head>
     <body>
@@ -84,14 +89,23 @@
                 <div id="health1percent" class="health-bar">Player1</div>
               </div> 
               <div class="title">
-                <h1 style="margin: 0!important;opacity: 0.5;background-color: white;font-family: Killer;">IMMORTAL COMBAT</h1> 
+                <h1 style="margin: 0!important;opacity: 0.5;background-color: white;font-family: Killer;">
+                  IMMORTAL COMBAT
+                </h1> 
+                <button id="pause" style="font-size: small;opacity: 0.5;font-weight: bolder;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pause" viewBox="0 0 16 16">
+                  <path d="M6 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm4 0a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5z"/>
+                </svg></button>
+                <button id="home" style="font-size: small;opacity: 0.5;font-weight: bolder;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M2 13.5V7h1v6.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7h1v6.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5zm11-11V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
+                  <path fill-rule="evenodd" d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"/>
+                </svg></button>
               </div>
               <div class="health2 health-bar-container">
                 <div id="health2percent" class="health-bar">Player2</div>
               </div>             
         </div>
         <div id="menu">
-            <div class="title">
+            <div style="text-align: center;">
               <h1 style="margin: 0!important;opacity: 0.8;font-size:50px;background-color: white;font-family: Killer;">IMMORTAL COMBAT</h1> <br>
               <span class="menuLine">Choose Your Fighters...</span> <br>
               <span>
@@ -116,21 +130,25 @@
         <div id="prompt" style="top:40%;text-align: center;font-family: Killer;font-size: 75px;color: #500202;">
             <span style="margin: 0!important;opacity: 0.9"></span> 
         </div>
+
+        <div id="loader-container">
+          <div id="loadpercent"></div>
+        </div>   
         <div id="controls" style="top:80%;font-family: Killer;">
           <div style="left: 2%;width:30%;text-align: left;">
-          <button>W</button>
           <button>A</button>
+          <button>W</button>
           <button>D</button>
           <button>F</button>
           <button>E</button>
           </div>
           <div style="right: 2%;width: 30%;text-align: right;">
-          <button>↑</button>
           <button>←</button>
+          <button>↑</button>
           <button>→</button>
           <button>CTRL</button>
           <button>P</button>
-        </div>
+          </div>
         </div>
         <script src="js/main.js" type="module"></script>
     </body>     
