@@ -8,6 +8,7 @@ let showPrompt = (display,message) => {
 }
 
 let InitializeFight = (player1, player2) => {
+let hemiLight, light;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, 1920 / 1080, 1, 1000);
 camera.position.set(75, 20, 0);
@@ -16,15 +17,20 @@ camera.add( listener );
 const audioLoader = new THREE.AudioLoader();
 const sound = new THREE.Audio( listener );
 const renderer =  new THREE.WebGLRenderer();
-const light1 = new THREE.AmbientLight( 0x404040 );
-const light2 = new THREE.DirectionalLight( 0xffffff, 0.1);
-const light3 =  new THREE.HemisphereLight( 0xffffbb, 0x080820,4 );
 const manager = new THREE.LoadingManager();
 renderer.setClearColor("#E5E5E5");
-light2.position.set(0,0,100)
-scene.add( light1 );
-scene.add( light2 );
-scene.add( light3 );
+hemiLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 1);
+scene.add(hemiLight);
+light = new THREE.SpotLight(0xffa95c,2);
+light.position.set(-50,50,50);
+light.castShadow = true;
+light.shadow.bias  = -0.0001;
+light.shadow.mapSize.width = 1024*4;
+light.shadow.mapSize.height = 1024*4;
+scene.add( light );
+renderer.toneMapping =  THREE.ReinhardToneMapping;
+renderer.toneMappingExposure = 2.3;
+renderer.shadowMap.enabled = true;
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 0, 0);
 controls.update();
@@ -33,6 +39,7 @@ var previousRAF = null;
 var characters = [];
 var gameover = false;
 var paused = false;
+var impacting = false;
 document.getElementById("health1percent").innerText = player1;
 document.getElementById("health2percent").innerText = player2;
 renderer.setSize( window.innerWidth, window.innerHeight);
@@ -105,6 +112,10 @@ var initialLoad = false;
             fbx.visible = false;
             fbx.name = player;
             fbx.code = playerCode;
+            fbx.traverse(el => {if(el.isMesh)
+                el.castShadow = true;
+                el.receiveShadow = true;}
+                )
           characters.push(fbx);
           fbx.scale.setScalar(0.1);
           fbx.traverse(c => {
@@ -175,13 +186,13 @@ var initialLoad = false;
       }
     LoadBackground();
     LoadAnimatedModelAndPlay(
-            player2, new THREE.Vector3(40, 0, -15), 'player2');
+            player2, new THREE.Vector3(52, 4, -14), 'player2');
     LoadAnimatedModelAndPlay(
-            player1, new THREE.Vector3(40, 0, 15), 'player1', 3);
+            player1, new THREE.Vector3(52, 4, 14), 'player1', 3);
     RAF();
 
     let controller = (key) => {
-        if(characters.length > 1 && !gameover && !paused){
+        if(characters.length > 1 && !gameover && !paused && !impacting){
         switch(key.toUpperCase())
         {
             case 'W': {
@@ -189,12 +200,12 @@ var initialLoad = false;
                 break; 
                 }
             case 'A': {
-                if(!(checkDistance(10)))
+                if(!(checkDistance(12)))
                 getCharacterbyName("player1").position.z += 2; 
                 break; 
                 }
             case 'D': {
-                if(!(checkDistance(11)))
+                if(!(checkDistance(13)))
                 getCharacterbyName("player1").position.z -= 2;
                 break;
                 } 
@@ -219,12 +230,12 @@ var initialLoad = false;
                 break;
             }
             case 'ARROWLEFT':{
-                if(!(checkDistance(11)))
+                if(!(checkDistance(13)))
                 getCharacterbyName("player2").position.z +=2;
                 break;
             }
             case 'ARROWRIGHT':{
-                if(!(checkDistance(10)))
+                if(!(checkDistance(12)))
                 getCharacterbyName("player2").position.z -=2;
                 break;
             }
@@ -243,7 +254,11 @@ var initialLoad = false;
                 getCharacterbyName("player2").position.z -=2;
                 break;
             }
-            case 'CTRL':{
+            case '1':{
+                Attack('player2','player1', 'Attack', 'Impact', 150, 'Missed.mp3')
+                break;
+            } 
+            case '2':{
                 Attack('player2','player1', 'Attack1', 'Impact1', 300, 'EffortMan.wav');
                 break;
             } 
@@ -295,7 +310,8 @@ var initialLoad = false;
 
     let Attack = (Aggressor,Aggressee,Attack,Impact,loss, sound) => {
         const AggressorObject = getCharacterbyName(Aggressor);
-        const AggresseeObject = getCharacterbyName(Aggressee)
+        const AggresseeObject = getCharacterbyName(Aggressee);
+        impacting = true;
         animation(AggressorObject, './assets/', `Action/${AggressorObject.name}/${Attack}.fbx`, { loopOnce : true});
         setTimeout(()=>{
             if(checkDistance(CharacterSpecs[AggressorObject.name][Attack].distance)){
@@ -305,6 +321,8 @@ var initialLoad = false;
             checkIfDead();}
             else
             soundEffect(`./assets/Sounds/${sound}`); 
+
+            impacting = false;
         },CharacterSpecs[AggressorObject.name][Attack].time);
     }
 
@@ -315,6 +333,11 @@ var initialLoad = false;
     }
     let animate = () => {
         requestAnimationFrame( animate );
+        light.position.set(
+            camera.position.x + 10,
+            camera.position.y + 10,
+            camera.position.z + 10
+        )
         renderer.render( scene, camera );
     }
 
@@ -332,6 +355,18 @@ var initialLoad = false;
             Attack1 : {time:800,distance:15},
         },
         VanGuard : {
+            Attack : {time:1050,distance:20},
+            Attack1 : {time:1050,distance:15},
+        },
+        Arissa : {
+            Attack : {time:1050,distance:14},
+            Attack1 : {time:1900,distance:20},
+        },
+        Erika : {
+            Attack : {time:1050,distance:20},
+            Attack1 : {time:1050,distance:15},
+        },
+        Mutant : {
             Attack : {time:1050,distance:20},
             Attack1 : {time:1050,distance:15},
         },
@@ -354,6 +389,7 @@ document.getElementById("initialize-button").addEventListener("click",()=>{
         showPrompt('block', 'Loading...')
         InitializeFight(player1, player2);
 }})
+
 document.getElementById("fullscreen-button").addEventListener("click",()=>{
     fullScreen();
     if (document.exitFullscreen) {
@@ -375,6 +411,7 @@ document.getElementById("fullscreen").addEventListener("click",()=>{
       }
 })
 
+//NOT REQUIRED FOR ANDROID
 let fullScreen = () => {
     if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
@@ -383,7 +420,8 @@ let fullScreen = () => {
         <path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5zM0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zm10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4z"/>
       </svg>`;
       if(window.screen.orientation)
-        window.screen.orientation.lock("landscape").then(
+        window.screen.orientation.lock("landscape")
+        .then(
             success => console.log(success),
             failure => console.log(failure)
         )
